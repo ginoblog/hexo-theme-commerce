@@ -1,0 +1,74 @@
+<%- partial('_partial/bg-cover') %>
+
+<main class="content">
+
+    <% if (theme.postCalendar) { %>
+    <%- partial('_widget/post-calendar') %>
+    <% } %>
+
+    <%
+    /**
+     * hashCode function.
+     *
+     * @param str str
+     * @returns {number}
+     */
+    var hashCode = function (str) {
+        if (!str && str.length === 0) {
+            return 0;
+        }
+
+        var hash = 0;
+        for (var i = 0, len = str.length; i < len; i++) {
+            hash = ((hash << 5) - hash) + str.charCodeAt(i);
+            hash |= 0;
+        }
+        return hash;
+    };
+
+    // init year and month variable.
+    var year = '1970';
+    var month = '1970-01';
+
+    // post feature image.
+    var featureimg = '/medias/featureimages/0.jpg';
+    var featureImages = theme.featureImages;
+    %>
+
+    <article class="container articles article">
+        <div class="row article-row">
+            <% page.posts.forEach(post => { %>
+            <% if (post.hide != true)  { %> <!-- 隐藏某个文章 -->
+            <div class="article col s12 m6 l4" data-aos="zoom-in">
+                <div class="card">
+                    <a href="<%- url_for(post.path) %>">
+                        <div class="card-image">
+                            <% if (post.img) { %>
+                            <img src="<%- url_for(post.img) %>" class="responsive-img" alt="<%= post.title %>">
+                            <% } else { %>
+                            <%
+                                var featureimg = '/medias/featureimages/0.jpg';
+                                var featureImages = theme.featureImages;
+                                if (!featureImages || featureImages.length == 0) {
+                                    return featureimg;
+                                }
+                                featureimg = featureImages[Math.abs(hashCode(post.title) % featureImages.length)]
+                            %>
+                            <img src="<%- theme.jsDelivr.url %><%- url_for(featureimg) %>" class="responsive-img" alt="<%= post.title %>">
+                            <% } %>
+                            <span class="card-title"><%= post.title %></span>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+            <% } %>  <!-- 隐藏某个文章 -->
+            <% }); %>
+        </div>
+    </article>
+
+</main>
+
+<% if (page.total > 1) { %>
+<%- partial('_partial/paging') %>
+<% } %>
